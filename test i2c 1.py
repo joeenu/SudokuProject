@@ -30,3 +30,5 @@ for device in devices:
 #time.sleep(2)
 
 #i2c.writeto_mem(32,20,package)
+
+#hello world
