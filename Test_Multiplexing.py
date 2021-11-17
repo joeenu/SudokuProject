@@ -36,7 +36,7 @@ def WriteToSeg(Value, ModuleNumber, ActiveLayer):
         if Value == 2 or Value == 3 or Value == 4 or Value == 5 or Value == 6 or Value == 8 or Value == 9:
                 mcp[ModuleNumber].output(0)
 
-#This is  complete clusterfuck, good luck to future me figuring this out.
+#This is a complete clusterfuck, good luck to future me figuring this out.
 while True:
     while ModuleValue < 10:  
         print("Value", ModuleValue) 
