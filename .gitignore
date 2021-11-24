@@ -130,3 +130,6 @@ dmypy.json
 
 #23017 library files
 mcp23017.py
+
+#vscode specifi files
+.vscode
