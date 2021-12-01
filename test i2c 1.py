@@ -5,7 +5,7 @@ import time
 sdaPIN = machine.Pin(0)
 sclPIN = machine.Pin(1)
 
-i2c = machine.I2C(0, sda = sdaPIN, scl = sclPIN ,freq =400000)
+i2c = machine.I2C(0, sda = sdaPIN, scl = sclPIN ,freq =1700000)
 
 devices = i2c.scan()
 
