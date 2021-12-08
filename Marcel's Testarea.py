@@ -93,6 +93,6 @@ for i in final_string:
     elif i == "\n":
         final_list.__delitem__
     else:
-        final_list.append(i)
+        final_list.append(int(i))
 
 print(final_list)
