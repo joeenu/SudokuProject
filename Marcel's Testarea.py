@@ -1,4 +1,4 @@
-from sudoku_generator.Sudoku.Generator import *
+from Generator import *
 
 
 solvedlist = [  "1","2","3","4","5","6","7","8","9",
