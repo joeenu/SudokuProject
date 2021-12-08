@@ -86,8 +86,12 @@ final_list = []
 for i in final_string:
     if i == "_":
         final_list.append(0)
-    if i == "|":
-        break
+    elif i == "|":
+        final_list.__delitem__
+    elif i == "\r":
+        final_list.__delitem__
+    elif i == "\n":
+        final_list.__delitem__
     else:
         final_list.append(i)
 
