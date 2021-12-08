@@ -1,4 +1,4 @@
-from sudoku_generator.Sudoku.Cell import Cell
+from Cell import Cell
 
 
 class Board:

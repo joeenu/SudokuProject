@@ -59,7 +59,7 @@ print(workinglist)
 
 difficulty = 40, 5 #da müend zwei variable ine wod schwirigkeit bestimmed. die 1. isch zum für schwirigkeitsgrad (höcher = schwieriger, 0-81) die zweit isch random schwirigkeit (ca 0 - 15)
 
-gen = Generator("C:\\Users\\marce\\OneDrive\\Dokumente\\Code\\SudokuProject\\sudoku_generator\\base.txt")
+gen = Generator("base.txt")
 
 gen.randomize(100)
 
