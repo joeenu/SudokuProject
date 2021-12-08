@@ -85,7 +85,7 @@ final_string = format(final)
 final_list = []
 for i in final_string:
     if i == "_":
-        final_list.append(0)
+        final_list.append(str(0))
     elif i == "|":
         final_list.__delitem__
     elif i == "\r":
@@ -93,6 +93,6 @@ for i in final_string:
     elif i == "\n":
         final_list.__delitem__
     else:
-        final_list.append(int(i))
+        final_list.append(i)
 
 print(final_list)
