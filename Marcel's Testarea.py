@@ -1,6 +1,9 @@
 #wichtig und bruchts
+from os import write
 from Generator import *
 from machine import Pin
+import machine, neopixel
+
 
 
 #Generator shit
@@ -60,7 +63,7 @@ ledsegmentorder =   [8,7,6,5,4,3,2,1,0,
 
 solved_list = [initial_list[i] for i in ledsegmentorder]
 
-edit_list = final_list #das chönti falsch sii                                                      !!!!!!!!!!
+edit_list = [final_list[i] for i in ledsegmentorder] #das chönti falsch sii                       !!!!!!!!!!
 #------------------------------------------------------------------------------------------------
 
 
@@ -136,6 +139,8 @@ def Numpad_button(inputpins):
 
 #LED-shit
 #------------------------------------------------------------------------------------------------
+#wievill vo dene dinger ahghänkt sind
+np = neopixel.NeoPixel(machine.Pin(0),567)
 
 #Liste welli LEDs für welli Zahl muess lüchte
 LED_for_num = {
@@ -155,10 +160,16 @@ def Switch_LED(LED_index, state):
     print(f"{LED_index} {state}")   #da s print zu dem ändere wo de output wiitergit
 
 def Update_LEDs(list):
-    for grid_index, num in enumerate(list):                    #gaht dur jedi Zahl vom Sudoku
+    for grid_index, num in enumerate(list):                     #gaht dur jedi Zahl vom Sudoku
         for segment_index, state in enumerate(LED_for_num[num]):#gaht dur jedes LED vom Segment
             LED_index = grid_index*7 + segment_index            #berechnet die gnau LED position
             Switch_LED(LED_index, state)                        #füehrt für jedes LED de Command us
+            if state == 1:
+                np[LED_index] = (150,150,150)
+                np.write()
+            else:
+                np[LED_index] = (0,0,0)
+                np.write()
 #------------------------------------------------------------------------------------------------
 
 
@@ -188,3 +199,37 @@ while edit_list != solved_list:
 #------------------------------------------------------------------------------------------------
 print("GG ez")
 #------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+#TESTAREA
+#------------------------------------------------------------------------------------------------
+#sötti d farbe vo de LEDs ändere (wiis = vorgäh; blau = selber inegsetzt)
+
+
+#muess obe nach "edit_list = [final_list[i] for i in ledsegmentorder]" ine
+'''
+early_edit_list = edit_list
+'''
+
+#muess obe bi "def Update_LEDs" gänderet werde
+'''
+def Update_LEDs(list):
+    for grid_index, num in enumerate(list):                     #gaht dur jedi Zahl vom Sudoku
+        for segment_index, state in enumerate(LED_for_num[num]):#gaht dur jedes LED vom Segment
+            LED_index = grid_index*7 + segment_index            #berechnet die gnau LED position
+            Switch_LED(LED_index, state)                        #füehrt für jedes LED de Command us
+            if state == 1 and segment_index in early_edit_list != "0":
+                np[LED_index] = (150,150,150)
+                np.write()
+            elif state == 1 and segment_index in early_edit_list == "0":
+                np[LED_index] = (20,20,150)
+                np.write()
+            else:
+                np[LED_index] = (0,0,0)
+                np.write()
+'''
