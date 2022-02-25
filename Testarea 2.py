@@ -1,8 +1,7 @@
 #wichtig und bruchts
-from os import write
 from Generator import *
-#from machine import Pin
-#import machine, neopixel
+from machine import Pin
+import machine, neopixel, os, rp2, array, time
 
 
 '''
@@ -68,6 +67,48 @@ initial_list = ["2", "4", "6", "5", "1", "3", "8", "9", "7",
                 "4", "1", "2", "8", "7", "9", "5", "3", "6",
                 "7", "9", "8", "3", "5", "6", "4", "2", "1"]
 
+
+
+# Configure the number of WS2812 LEDs.
+NUM_LEDS =567
+PIN_NUM = 0
+brightness = 0.1
+
+@rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
+def ws2812():
+    T1 = 2
+    T2 = 5
+    T3 = 3
+    wrap_target()
+    label("bitloop")
+    out(x, 1)               .side(0)    [T3 - 1]
+    jmp(not_x, "do_zero")   .side(1)    [T1 - 1]
+    jmp("bitloop")          .side(1)    [T2 - 1]
+    label("do_zero")
+    nop()                   .side(0)    [T2 - 1]
+    wrap()
+
+def changeLights(arr):
+    # Create the StateMachine with the ws2812 program, outputting on pin
+    sm = rp2.StateMachine(0, ws2812, freq=8_000_000, sideset_base=Pin(PIN_NUM))
+
+    # Start the StateMachine, it will wait for data on its FIFO.
+    sm.restart()
+    sm.active(1)
+
+    # sm.put(array.array("I", [(r<<16) + (g<<8) + b for _ in range(567)]),8)
+    sm.put(array.array("I", arr),8)
+
+
+# def ledval(r, g, b):
+#     return (r << 16) + (g << 8) + b
+
+#def updateLED(arr):
+#    global sm
+#    print("hello")
+#    
+#    print("world")
+
 #ordned d lischte nomal neu so dasmer die für leds bruche chan
 ledsegmentorder =   [8,7,6,5,4,3,2,1,0,
                     9,10,11,12,13,14,15,16,17,
@@ -89,66 +130,89 @@ print(edit_list)
 #Chnöpflishit
 #------------------------------------------------------------------------------------------------
 inputpins = []
-
-C0 = Pin(4, Pin.OUT)
-inputpins.append(C0)
-C1 = Pin(5, Pin.OUT)
-inputpins.append(C1)
-C2 = Pin(6, Pin.Out)
-inputpins.append(C2)
-C3 = Pin(7, Pin.Out)
-inputpins.append(C3)
-C4 = Pin(9, Pin.Out)
-inputpins.append(C4)
-C5 = Pin(10, Pin.Out)
-inputpins.append(C5)
-C6 = Pin(11, Pin.Out)
-inputpins.append(C6)
-C7 = Pin(12, Pin.Out)
-inputpins.append(C7)
-C8 = Pin(14, Pin.Out)
-inputpins.append(C8)
-
 outputpins = []
 
-R0 = Pin(15, Pin.IN)
+C0 = Pin(2, Pin.OUT)
+outputpins.append(C0)
+C1 = Pin(3, Pin.OUT)
+outputpins.append(C1)
+C2 = Pin(4, Pin.OUT)
+outputpins.append(C2)
+C3 = Pin(5, Pin.OUT)
+outputpins.append(C3)
+C4 = Pin(6, Pin.OUT)
+outputpins.append(C4)
+C5 = Pin(7, Pin.OUT)
+outputpins.append(C5)
+C6 = Pin(8, Pin.OUT)
+outputpins.append(C6)
+C7 = Pin(9, Pin.OUT)
+outputpins.append(C7)
+C8 = Pin(10, Pin.OUT)
+outputpins.append(C8)
+
+R0 = Pin(11, Pin.IN)
 inputpins.append(R0)
-R1 = Pin(16, Pin.IN)
+R1 = Pin(12, Pin.IN)
 inputpins.append(R1)
-R2 = Pin(17, Pin.IN)
+R2 = Pin(13, Pin.IN)
 inputpins.append(R2)
-R3 = Pin(19, Pin.IN)
+R3 = Pin(14, Pin.IN)
 inputpins.append(R3)
-R4 = Pin(20, Pin.IN)
+R4 = Pin(15, Pin.IN)
 inputpins.append(R4)
-R5 = Pin(21, Pin.IN)
+R5 = Pin(16, Pin.IN)
 inputpins.append(R5)
-R6 = Pin(22, Pin.IN)
+R6 = Pin(17, Pin.IN)
 inputpins.append(R6)
-R7 = Pin(24, Pin.IN)
+R7 = Pin(18, Pin.IN)
 inputpins.append(R7)
-R8 = Pin(25, Pin.IN)
+R8 = Pin(19, Pin.IN)
 inputpins.append(R8)
 
 #das isch für numpad
-R9 = Pin(26, Pin.IN)
+R9 = Pin(20, Pin.IN)
 
 
 def Index_button(outputpins, inputpins):
     while True:
         for outputpin, o_pin_num in enumerate(outputpins):
-            outputpin.value(1)
+            # print(outputpin, o_pin_num)
+            o_pin_num.value(1)
+            # print([inputpin.value() for inputpin in inputpins])
             for inputpin, i_pin_num in enumerate(inputpins):
-                if inputpin == 1:
-                    return o_pin_num*9 + i_pin_num
-
+                if i_pin_num.value() == 1:
+                    o_pin_num.value(0)
+                    if outputpin % 2 != 0:
+                        edit_list[outputpin*10 - inputpin + 7 + (int(outputpin/2)-1)*-2 -2] = "10"
+                        return outputpin*10 - inputpin + 7 + (int(outputpin/2)-1)*-2 -2
+                    else:
+                        edit_list[outputpin*9 + inputpin] = "10"
+                        return outputpin*9 + inputpin
+            o_pin_num.value(0)
 
 def Numpad_button(inputpins):
+    print("Checking Numpad buttons")
     while True:
+        for outputpin, o_pin_num in enumerate(outputpins):
+            print(outputpin)
+            o_pin_num.value(1)
+            print(R9.value())
+            if R9.value() == 1:
+                o_pin_num.value(0)
+                return outputpin
+            else:
+                o_pin_num.value(0)
+            
+""" def Numpad_button(inputpins):
+    print("Checking Numpad buttons")
+    while True:
+        print([inputpin.value() for inputpin in inputpins])
         R9.value(1)
         for inputpin, i_pin_num in enumerate(inputpins):
-            if inputpin == 1:
-                return i_pin_num
+            print(inputpin, i_pin_num)
+            if i_pin_num.value() == 1:
+                return inputpin """
 #------------------------------------------------------------------------------------------------
 
 
@@ -160,7 +224,6 @@ def Numpad_button(inputpins):
 #------------------------------------------------------------------------------------------------
 #wievill vo dene dinger ahghänkt sind
 np = neopixel.NeoPixel(machine.Pin(0),567)
-j
 #Liste welli LEDs für welli Zahl muess lüchte
 LED_for_num = {
     "0":[0,0,0,0,0,0,0],
@@ -173,22 +236,35 @@ LED_for_num = {
     "7":[1,0,1,0,0,1,0],
     "8":[1,1,1,1,1,1,1],
     "9":[1,1,1,1,0,1,1],
+    "10":[1,1,1,1,1,1,1],
 }
 
 def Switch_LED(LED_index, state):
-    print(f"{LED_index} {state}")   #da s print zu dem ändere wo de output wiitergit
+    np.write(f"{LED_index} {state}")   #da s print zu dem ändere wo de output wiitergit
 
 def Update_LEDs(list):
+    arr = []
     for grid_index, num in enumerate(list):                     #gaht dur jedi Zahl vom Sudoku
         for segment_index, state in enumerate(LED_for_num[num]):#gaht dur jedes LED vom Segment
             LED_index = grid_index*7 + segment_index            #berechnet die gnau LED position
-            Switch_LED(LED_index, state)                        #füehrt für jedes LED de Command us
+#            Switch_LED(LED_index, state)                        #füehrt für jedes LED de Command us
             if state == 1:
-                np[LED_index] = (150,150,150)
-                np.write()
+                if num == "10":
+                    arr.append((0<<16) + (0<<8) + 10)
+                else:
+                    arr.append((10<<16) + (0<<8) + 0)
             else:
-                np[LED_index] = (0,0,0)
-                np.write()
+                arr.append((0<<16) + (0<<8) + 0)
+
+    notComplete = False
+    for i in list:
+        if i == "0":
+            notComplete = True
+    if notComplete == False:
+        arr = [(100<<16) + (100<<8) + 100 for _ in range(567)]
+
+    changeLights(arr)
+    # print(arr)
 #------------------------------------------------------------------------------------------------
 
 
@@ -200,15 +276,14 @@ def Update_LEDs(list):
 print(solved_list)
 
 while edit_list != solved_list:
-
-    print(edit_list)
-
-    segmentbutton = Index_button(outputpins, inputpins)
-
-    if edit_list[segmentbutton] == "0":
-        edit_list[segmentbutton] = str(Numpad_button()+1)
-
     Update_LEDs(edit_list)
+    # print(edit_list)
+    segmentbutton = Index_button(outputpins, inputpins)
+    # print(segmentbutton)
+    Update_LEDs(edit_list)
+    if edit_list[segmentbutton] == "10":
+        edit_list[segmentbutton] = str(Numpad_button(inputpins)+1)
+        
 #------------------------------------------------------------------------------------------------
 
 

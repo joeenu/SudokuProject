@@ -157,7 +157,7 @@ LED_for_num = {
 }
 
 def Switch_LED(LED_index, state):
-    print(f"{LED_index} {state}")   #da s print zu dem ändere wo de output wiitergit
+    np.write(f"{LED_index} {state}")   #da s print zu dem ändere wo de output wiitergit
 
 def Update_LEDs(list):
     for grid_index, num in enumerate(list):                     #gaht dur jedi Zahl vom Sudoku
