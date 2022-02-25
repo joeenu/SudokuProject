@@ -9,9 +9,6 @@ Research into possible and available IC's to use in the project, defining of tec
 confirming of theoretical compatability of all seleced components.
 ordering of selected components
 
-8.12.21
-
-
 15.12.21
 creating testing methods and programming them.
 
@@ -43,4 +40,11 @@ Routing of the pcb
 finishing routing, and confirming of all specifications
 
 2.2.22
-documentation.
+starting with the documentation.
+
+17.-19.2.22
+Soldering of the PCB, testing of the LEDs
+more work on the documentation
+
+20.-25.2.22 
+finishing the documentation
